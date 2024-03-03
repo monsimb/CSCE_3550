@@ -9,11 +9,6 @@ import uuid
 import jwt
 
 
-
-
-app = Flask(__name__)
-
-
 valid_keys = []
 
 key = rsa.generate_private_key(
@@ -31,8 +26,11 @@ private_key = key.private_bytes(            # sets private key based on rsa gene
 public_key = key.public_key()               # sets public key based on rsa generated key
 
 
-def jwk_set():
-    for i in valid_keys:
+app = Flask(__name__)
+
+
+def jwk_set():                              # create key sets
+    for i in valid_keys:                    # using only key id (since i am not changing the actual keys)
         keys = {
         "kty":"RSA",
         "kid":i,      # FIX: only the unexpired kid for jwt should go here... fix logic
@@ -70,18 +68,9 @@ def encode_auth_token(exp,kid):
 
 
 
-# def decode_auth_token(auth_token):                                        # not being used yet for part 1 ...
-#     try:
-#         payload = jwt.decode(auth_token, public_key,  algorithms=["RS256"])
-#         return payload['sub']
-#     except jwt.ExpiredSignatureError:
-#         return 'Signature expired. Please log in again.'
-#     except jwt.InvalidTokenError:
-#         return 'Invalid token. Please log in again.'
 
 
-
-@app.route("/")
+@app.route("/")                             # Main landing page
 def home():
     return "Hello! <h1>Main page<h1>"
 
@@ -111,4 +100,5 @@ def jwk_ret():
 
     
 if __name__ == "__main__":
+    
     app.run(debug=True, host='localhost', port=8080)        # run app on port 8080

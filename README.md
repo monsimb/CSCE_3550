@@ -1,5 +1,5 @@
 Introduction:
-This project is a learning tool to navigate JWKS and JWT when it comes to web based cyber security. Required by CSCE3550.
+This project was created as a learning tool to navigate JWKS and JWT when it comes to web based cyber security. Required by CSCE3550 in an assignment created by Jacob Hochstetler.
 
 Getting Started:
 This project uses the following -

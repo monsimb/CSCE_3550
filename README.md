@@ -9,11 +9,15 @@ This project uses the following -
 -cryptography
 -sqlite3
 -datetime
+-uuid
+-argon2
+
 Each phase of this project contains 1 driver file titled "project#.py" and a "testing.py" (which is updated at each iteration).
 
 Features:
-At the current phase, this project generates a private rsa_key pair, creates jwt and jwks.
-It also creates a database and table, where it inserts an expired and unexpared key (with kid, key, and expiry).
+At the current phase, this project retrieves user data and stores it in a "users" database. Similarly, it receives authorization requests and stores it's data into "auth_logs" database. 
+
+The stretch goal for this project is to implement the optional Delimiter function to limit auth requests allowed per time.
 
 Authors:
 This project was written by Monique Simberg with assistance of the CSCE 3550 and Leonardo Simberg in troubleshooting.

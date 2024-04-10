@@ -52,7 +52,7 @@ def create_connection(db_file):
 
 
 
-def create_table(conn):
+def create_table_auth_logs(conn):
     """ create a table from the create_table_sql statement
     :param conn: Connection object
     :param create_table_sql: a CREATE TABLE statement
@@ -65,7 +65,7 @@ def create_table(conn):
     request_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id INTEGER,
     FOREIGN KEY(user_id) REFERENCES users(id)
-    )""";
+    )"""
 
 
     try:
@@ -74,6 +74,28 @@ def create_table(conn):
     except Error as e:
         print(e)
 
+def create_table_users(conn):
+    """ create a table from the create_table_sql statement
+    :param conn: Connection object
+    :param create_table_sql: a CREATE TABLE statement
+    :return:
+    """
+
+    sql_create_users_table = """CREATE TABLE IF NOT EXISTS users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    email TEXT UNIQUE,
+    date_registered TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP      
+    )"""
+
+
+    try:
+        c = conn.cursor()
+        c.execute(sql_create_users_table)
+    except Error as e:
+        print(e)
 
 
 def insert_keys(conn, task):
@@ -118,8 +140,13 @@ def insert_auth_logs(conn, dict):
         """
 
         sql = ' INSERT INTO auth_logs(request_ip,user_id) VALUES(?,?) '
+        username = dict["username"]
         cur = conn.cursor()
-        commit = ("localhost", 5)
+
+        cur.execute("SELECT id FROM users WHERE username = ?", (username,)) 
+        id = cur.fetchone()
+        print(id[-1])
+        commit = ("localhost", id[-1])
         cur.execute(sql, commit)
         conn.commit()
         return cur.lastrowid
@@ -132,11 +159,17 @@ def select_all_tasks(conn):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM auth_logs")
-
     rows = cur.fetchall()
 
     for row in rows:
         print(row)
+
+    cur.execute("SELECT * FROM users")
+    rows = cur.fetchall()
+
+    for row in rows:
+        print(row)
+
 
 def delete_all_rows(conn):
     """
@@ -242,8 +275,10 @@ def register():
 
 if __name__ == "__main__":
     connection = create_connection(r"totally_not_my_privateKeys.db")
-    # create_table(connection);
+    create_table_auth_logs(connection)
+    create_table_users(connection)
     # connection.execute("DROP TABLE auth_logs")
+    # select_all_tasks(connection)
     if connection is not None:
         delete_all_rows(connection)
         task = ((1111, private_key, (int(round(datetime.now().timestamp()))-100)))
